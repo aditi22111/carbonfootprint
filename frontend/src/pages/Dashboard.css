@@ -1,0 +1,145 @@
+/* Main dashboard container styling */
+.dashboard-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 30px;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    background-color: #fff;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 60px;
+}
+
+/* Vehicle, energy, and total footprint sections */
+.section {
+    flex: 1 1 calc(50% - 20px); /* Two sections side by side */
+    padding: 25px;
+    margin-bottom: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Title styling for each section */
+.section h3 {
+    font-size: 1.5em;
+    color: #00796b;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #00796b; /* Add a bottom border for separation */
+    padding-bottom: 10px;
+    text-align: center;
+}
+
+/* Total footprint section should stand out */
+.total-footprint-section {
+    background-color: #e0f7fa;
+    border-color: #00796b;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Charts styling */
+.chart-container {
+    width: 100%;
+    height: 350px; /* Increased height for better visibility */
+    margin-top: 20px;
+    border-radius: 8px;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    padding: 10px;
+}
+
+.chart-container canvas {
+    max-width: 100%;
+    height: auto;
+}
+
+.chart-container:before {
+    content: "Chart Placeholder";
+    color: #555;
+    font-size: 1.2em;
+}
+
+/* Footprint metrics within sections */
+.footprint-metric {
+    margin-bottom: 20px;
+    padding: 15px 0;
+    text-align: center;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+
+.footprint-metric h4 {
+    font-size: 1.3em;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.footprint-metric p {
+    font-size: 1.2em;
+    color: #00796b;
+}
+
+/* Styling for dropdowns and input elements */
+select, input[type="number"] {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1em;
+}
+
+select:focus, input[type="number"]:focus {
+    border-color: #00796b;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 150, 136, 0.3);
+}
+
+/* Button styling */
+button {
+    padding: 10px 15px;
+    background-color: #00796b;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #005f56;
+}
+
+.calculate-btn {
+    margin-top: 10px;
+}
+
+/* Responsive adjustments for medium screens */
+@media (max-width: 768px) {
+    .section {
+        flex: 1 1 100%; /* Stack sections vertically on smaller screens */
+    }
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 480px) {
+    .footprint-metric h4 {
+        font-size: 1.1em;
+    }
+
+    .footprint-metric p {
+        font-size: 1em;
+    }
+}
