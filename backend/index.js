@@ -21,7 +21,7 @@ app.use(cors());
 // Routes
 app.use('/auth', AuthRouter);
 
-// Sample carbon footprint calculation function
+
 
 
 // Start the server
