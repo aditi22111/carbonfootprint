@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import { handleError, handleSuccess } from '../utils';
+import Dashboard from './Dashboard';
 import './DetailForm.css';
 
-const DetailForm = ({ onSubmit }) => {
+const DetailForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
+  const [loggedInUser, setLoggedInUser] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -17,7 +22,63 @@ const DetailForm = ({ onSubmit }) => {
     consent: false,
     date: '',
   });
+  const [showDashboard, setShowDashboard] = useState(false);
 
+  const navigate = useNavigate();
+
+  // Fetch logged-in user on component mount
+  useEffect(() => {
+    setLoggedInUser(localStorage.getItem('loggedInUser'));
+  }, []);
+
+  // Logout functionality
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('loggedInUser');
+    handleSuccess('User Logged out');
+    setTimeout(() => {
+      navigate('/login');
+    }, 1000);
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (currentStep === steps.length - 1) {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('No authorization token found.');
+        }
+
+        const response = await fetch('http://localhost:8080/auth/updateUserDetails', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ ...formData, userId: formData.email }),
+        });
+
+        if (!response.ok) {
+          const errorResponse = await response.json();
+          console.error('Error:', errorResponse);
+          handleError(errorResponse.message || 'Form submission failed');
+        } else {
+          const result = await response.json();
+          handleSuccess('Form submitted successfully');
+          setShowDashboard(true);
+        }
+      } catch (err) {
+        handleError(err.message || 'An error occurred');
+      }
+    } else {
+      handleStepChange(1);
+    }
+  };
+
+  // Steps logic
   const steps = [
     { title: 'Step 1: Personal Details', content: personalDetailsStep() },
     { title: 'Step 2: Commute Details', content: commuteStep() },
@@ -45,15 +106,6 @@ const DetailForm = ({ onSubmit }) => {
 
   function handleStepChange(step) {
     setCurrentStep((prevStep) => prevStep + step);
-  }
-
-  function handleSubmit(e) {
-    e.preventDefault();
-    if (currentStep === steps.length - 1) {
-      onSubmit(formData);
-    } else {
-      handleStepChange(1);
-    }
   }
 
   function personalDetailsStep() {
@@ -226,24 +278,33 @@ const DetailForm = ({ onSubmit }) => {
 
   return (
     <div className="form-container">
-      <form onSubmit={handleSubmit}>
-        <h2>{steps[currentStep].title}</h2>
-        {steps[currentStep].content}
+      <h1>Welcome {loggedInUser}</h1>
+      <button onClick={handleLogout}>Logout</button>
 
-        <div className="step-buttons">
-          <button
-            type="button"
-            onClick={() => handleStepChange(-1)}
-            disabled={currentStep === 0}
-          >
-            Previous
-          </button>
+      {!showDashboard ? (
+        <form onSubmit={handleSubmit}>
+          <h2>{steps[currentStep].title}</h2>
+          {steps[currentStep].content}
 
-          <button type="submit">
-            {currentStep === steps.length - 1 ? 'Submit' : 'Next'}
-          </button>
-        </div>
-      </form>
+          <div className="step-buttons">
+            <button
+              type="button"
+              onClick={() => handleStepChange(-1)}
+              disabled={currentStep === 0}
+            >
+              Previous
+            </button>
+
+            <button type="submit">
+              {currentStep === steps.length - 1 ? 'Submit' : 'Next'}
+            </button>
+          </div>
+        </form>
+      ) : (
+        <Dashboard formData={formData} />
+      )}
+
+      <ToastContainer />
     </div>
   );
 };

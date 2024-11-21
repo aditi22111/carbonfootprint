@@ -47,7 +47,7 @@ function Signup() {
       localStorage.setItem('loggedInUser', userName);
       
       setTimeout(() => {
-        navigate('/home'); // Redirect to home page after signup
+        navigate('/detailform'); // Redirect to home page after signup
       }, 1000);
     } else if (error) {
       handleError(error?.details?.[0]?.message || 'Signup failed');

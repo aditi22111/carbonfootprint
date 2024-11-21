@@ -7,13 +7,21 @@ const Dashboard = () => {
   const formData = location.state?.formData || JSON.parse(localStorage.getItem('formData'));
 
   const [footprintData, setFootprintData] = useState(null);
+  const [loading, setLoading] = useState(true);  // To track loading state
+  const [error, setError] = useState(null);  // To track any errors
 
   useEffect(() => {
     if (formData) {
       const fetchFootprint = async () => {
         try {
+          setLoading(true);
+          setError(null);
+
           const token = localStorage.getItem('token');
-          
+          if (!token) {
+            throw new Error('No authorization token found');
+          }
+
           const response = await fetch('http://localhost:8080/auth/dashboard', {
             method: 'GET', // Ensure this matches the backend route method
             headers: {
@@ -21,26 +29,34 @@ const Dashboard = () => {
               'Authorization': `Bearer ${token}`
             }
           });
-  
+
           if (!response.ok) {
             throw new Error('Failed to fetch footprint data');
           }
-  
+
           const calculatedData = await response.json();
-          console.log('Received Footprint Data:', calculatedData); // Log the received data
           setFootprintData(calculatedData);
         } catch (error) {
-          console.error('Error fetching footprint data:', error);
+          setError(error.message);
+        } finally {
+          setLoading(false);
         }
       };
-  
+
       fetchFootprint();
     }
-  }, [formData]); // Add dependencies if required
-  
+  }, [formData]);
 
   if (!formData) {
     return <Navigate to="/home" replace />;
+  }
+
+  if (loading) {
+    return <div>Loading your carbon footprint data...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
   }
 
   // Destructure the user data if available
@@ -51,6 +67,7 @@ const Dashboard = () => {
       <h2>Your Carbon Footprint</h2>
       <p>Monthly Footprint: {user.monthlyFootprint || 'N/A'} kg CO2</p>
       <p>Yearly Footprint: {user.yearlyFootprint || 'N/A'} kg CO2</p>
+
       <h3>User Details</h3>
       <p>Name: {user.name || 'N/A'}</p>
       <p>Email: {user.email || 'N/A'}</p>
